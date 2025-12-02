@@ -71,7 +71,7 @@ jules-app/
 
 ## Jules API Integration
 
-This app integrates with the official Jules API (`https://julius.googleapis.com/v1alpha`) with the following endpoints:
+This app integrates with the official Jules API (`https://jules.googleapis.com/v1alpha`) with the following endpoints:
 
 - **GET /sources** - List all connected GitHub repositories
 - **GET /sessions** - List all Jules sessions

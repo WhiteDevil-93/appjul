@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useJules } from '@/lib/jules/provider';
 import type { Session } from '@/types/jules';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, isValid, parseISO } from 'date-fns';
 
 interface SessionListProps {
   onSelectSession: (session: Session) => void;
@@ -19,6 +19,18 @@ export function SessionList({ onSelectSession, selectedSessionId }: SessionListP
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'Unknown date';
+
+    try {
+      const date = parseISO(dateString);
+      if (!isValid(date)) return 'Unknown date';
+      return formatDistanceToNow(date, { addSuffix: true });
+    } catch {
+      return 'Unknown date';
+    }
+  };
 
   useEffect(() => {
     loadSessions();
@@ -101,7 +113,7 @@ export function SessionList({ onSelectSession, selectedSessionId }: SessionListP
 
   return (
     <ScrollArea className="h-full">
-      <div className="space-y-2 p-4">
+      <div className="space-y-1 p-2">
         {sessions.map((session) => (
           <Card
             key={session.id}
@@ -110,15 +122,15 @@ export function SessionList({ onSelectSession, selectedSessionId }: SessionListP
             }`}
             onClick={() => onSelectSession(session)}
           >
-            <CardHeader className="p-4">
+            <CardHeader className="p-2.5">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
-                  <CardTitle className="text-base truncate">{session.title}</CardTitle>
-                  <CardDescription className="text-xs mt-1">
-                    {formatDistanceToNow(new Date(session.createdAt), { addSuffix: true })}
+                  <CardTitle className="text-sm font-medium truncate leading-tight">{session.title}</CardTitle>
+                  <CardDescription className="text-xs mt-0.5">
+                    {formatDate(session.createdAt)}
                   </CardDescription>
                 </div>
-                <Badge className={getStatusColor(session.status)}>
+                <Badge className={`text-[10px] px-1.5 py-0 h-5 ${getStatusColor(session.status)}`}>
                   {session.status}
                 </Badge>
               </div>

@@ -108,8 +108,30 @@ export class JulesClient {
   // Sessions
   async listSessions(sourceId?: string): Promise<Session[]> {
     const params = sourceId ? `?sourceId=${sourceId}` : '';
-    const response = await this.request<{ sessions: Session[] }>(`/sessions${params}`);
-    return response.sessions || [];
+    const response = await this.request<{ sessions: any[] }>(`/sessions${params}`);
+
+    // Transform API response to match our Session type
+    return (response.sessions || []).map((session: any) => ({
+      id: session.id,
+      sourceId: session.sourceContext?.source?.replace('sources/github/', '') || '',
+      title: session.title,
+      status: this.mapState(session.state),
+      createdAt: session.createTime,
+      updatedAt: session.updateTime,
+      lastActivityAt: session.lastActivityAt
+    }));
+  }
+
+  private mapState(state: string): Session['status'] {
+    const stateMap: Record<string, Session['status']> = {
+      'COMPLETED': 'completed',
+      'ACTIVE': 'active',
+      'PLANNING': 'active',
+      'QUEUED': 'active',
+      'FAILED': 'failed',
+      'PAUSED': 'paused'
+    };
+    return stateMap[state] || 'active';
   }
 
   async getSession(id: string): Promise<Session> {

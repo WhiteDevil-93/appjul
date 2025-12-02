@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 
-const JULES_API_BASE = 'https://julius.googleapis.com/v1alpha';
+const JULES_API_BASE = 'https://jules.googleapis.com/v1alpha';
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
     const data = await response.json().catch(() => ({}));
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
+    console.error('[Jules API Proxy] Error:', error);
     return NextResponse.json(
       { error: 'Proxy error', message: error instanceof Error ? error.message : 'Unknown' },
       { status: 500 }

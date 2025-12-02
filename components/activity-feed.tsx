@@ -9,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, isValid, parseISO } from 'date-fns';
 import { Send } from 'lucide-react';
 
 interface ActivityFeedProps {
@@ -24,6 +24,18 @@ export function ActivityFeed({ session }: ActivityFeedProps) {
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'Unknown date';
+
+    try {
+      const date = parseISO(dateString);
+      if (!isValid(date)) return 'Unknown date';
+      return formatDistanceToNow(date, { addSuffix: true });
+    } catch {
+      return 'Unknown date';
+    }
+  };
 
   useEffect(() => {
     loadActivities();
@@ -46,9 +58,15 @@ export function ActivityFeed({ session }: ActivityFeedProps) {
       setActivities(data);
     } catch (err) {
       console.error('Failed to load activities:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load activities';
-      setError(errorMessage);
-      setActivities([]);
+      // For 404, just show empty state instead of error (session may not have activities yet)
+      if (err instanceof Error && err.message.includes('Resource not found')) {
+        setActivities([]);
+        setError(null);
+      } else {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load activities';
+        setError(errorMessage);
+        setActivities([]);
+      }
     } finally {
       setLoading(false);
     }
@@ -119,7 +137,7 @@ export function ActivityFeed({ session }: ActivityFeedProps) {
       <div className="border-b p-4">
         <h2 className="font-semibold truncate">{session.title}</h2>
         <p className="text-xs text-muted-foreground mt-1">
-          {formatDistanceToNow(new Date(session.createdAt), { addSuffix: true })}
+          {formatDate(session.createdAt)}
         </p>
       </div>
 
@@ -135,6 +153,16 @@ export function ActivityFeed({ session }: ActivityFeedProps) {
       )}
 
       <ScrollArea ref={scrollRef} className="flex-1 p-4">
+        {activities.length === 0 && !loading && !error && (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-muted-foreground text-center">
+              No activities yet.
+              {session.status !== 'completed' && session.status !== 'failed' &&
+                <span className="block mt-1">This session may be queued or in progress.</span>
+              }
+            </p>
+          </div>
+        )}
         <div className="space-y-4">
           {activities.map((activity) => (
             <div
@@ -151,7 +179,7 @@ export function ActivityFeed({ session }: ActivityFeedProps) {
                       {activity.type}
                     </Badge>
                     <span className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true })}
+                      {formatDate(activity.createdAt)}
                     </span>
                   </div>
                   <p className="text-sm whitespace-pre-wrap">{activity.content}</p>

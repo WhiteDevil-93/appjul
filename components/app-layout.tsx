@@ -47,8 +47,8 @@ export function AppLayout() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-[300px] p-0">
-                <SheetHeader className="border-b p-4">
-                  <SheetTitle>Sessions</SheetTitle>
+                <SheetHeader className="border-b px-3 py-2.5">
+                  <SheetTitle className="text-sm">Sessions</SheetTitle>
                 </SheetHeader>
                 <SessionList
                   key={refreshKey}
@@ -91,8 +91,8 @@ export function AppLayout() {
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop Sidebar */}
         <aside className="hidden md:flex md:w-80 border-r flex-col">
-          <div className="border-b p-4">
-            <h2 className="font-semibold">Sessions</h2>
+          <div className="border-b px-3 py-2.5">
+            <h2 className="font-semibold text-sm">Sessions</h2>
           </div>
           <div className="flex-1 overflow-hidden">
             <SessionList
