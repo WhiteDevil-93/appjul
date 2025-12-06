@@ -97,7 +97,7 @@ export function NewSessionDialog({ onSessionCreated }: NewSessionDialogProps) {
           New Session
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-[480px] border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.15)]">
         <DialogHeader>
           <DialogTitle className="text-base">Create New Session</DialogTitle>
           <DialogDescription className="text-xs">
