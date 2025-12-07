@@ -19,11 +19,9 @@ Built with Next.js 16, TypeScript, and shadcn/ui.
 - **Mobile-First Design** - Fully responsive interface optimized for all devices
 - **Real-Time Updates** - Live activity feed for each Jules session
 - **Code Diff Viewer** - View detailed code changes and git patches directly in the UI
-- **Interactive Terminal** - Inspect bash command outputs with collapsible views
+- **Interactive Terminal** - Inspect bash command outputs with collapsible views (Coming Soon)
 - **Session Management** - Create, view, search, and manage multiple Jules sessions
 - **Analytics Dashboard** - Visualize session usage and activity trends
-- **Beautiful UI** - Modern interface built with shadcn/ui components (Dark Mode)
-- **Type-Safe** - Full TypeScript support throughout the application
 - **Secure** - API key stored locally in browser localStorage
 
 ## Screenshots
