@@ -5,6 +5,9 @@ import { useJules } from '@/lib/jules/provider';
 import type { Session } from '@/types/jules';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
+import {
 import {
   Tooltip,
   TooltipContent,
@@ -32,6 +35,7 @@ export function SessionList({ onSelectSession, selectedSessionId }: SessionListP
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const formatDate = (dateString: string) => {
     if (!dateString) return 'Unknown date';
@@ -122,9 +126,17 @@ export function SessionList({ onSelectSession, selectedSessionId }: SessionListP
     );
   }
 
-  // Filter out archived sessions
+  // Filter out archived sessions and apply search
   const archivedSessions = getArchivedSessions();
-  const visibleSessions = sessions.filter(session => !archivedSessions.has(session.id));
+  const visibleSessions = sessions
+    .filter(session => !archivedSessions.has(session.id))
+    .filter(session => {
+      if (!searchQuery) return true;
+      const query = searchQuery.toLowerCase();
+      const title = (session.title || '').toLowerCase();
+      const repo = (session.sourceId || '').toLowerCase();
+      return title.includes(query) || repo.includes(query);
+    });
 
   if (visibleSessions.length === 0) {
     return (
@@ -145,6 +157,17 @@ export function SessionList({ onSelectSession, selectedSessionId }: SessionListP
   return (
     <TooltipProvider>
       <div className="h-full flex flex-col bg-zinc-950">
+        <div className="px-3 py-2 border-b border-white/[0.08]">
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search for repo or sessions"
+              className="h-7 w-full bg-black/50 pl-7 text-[10px] border-white/10 focus-visible:ring-purple-500/50 placeholder:text-muted-foreground/50"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
         <ScrollArea className="flex-1">
           <div className="p-2 space-y-1">
             {visibleSessions.map((session) => (
