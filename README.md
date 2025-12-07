@@ -5,144 +5,66 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38bdf8)
 
-Jules UI is a feature-rich, self-hosted workspace designed to elevate the experience of working with **Google's Jules AI agent**.
-
-It transforms standard agent interactions into a powerful engineering platform, offering real-time visibility into code generation with live diffs, granular inspection of terminal command outputs, and comprehensive session analytics. Engineered for performance and clarity, it serves as a robust command center for managing complex AI-driven development tasks, featuring:
-
-- **Live Code Diffs**: Visualize git patches and code changes instantly.
-- **Interactive Terminal**: Inspect bash outputs and execute your own commands (Coming Soon).
-- **Analytics**: Track session success rates, duration, and activity volume.
-- **Enhanced Search**: Quickly find sessions by repository or title.
-
-Built with Next.js 16, TypeScript, and shadcn/ui.
-
-## Features
-
-- **Mobile-First Design** - Fully responsive interface optimized for all devices
-- **Real-Time Updates** - Live activity feed for each Jules session
-- **Code Diff Viewer** - View detailed code changes and git patches directly in the UI
-- **Interactive Terminal** - Inspect bash outputs and execute your own commands (Coming Soon)
-- **Session Management** - Create, view, search, and manage multiple Jules sessions
-- **Analytics Dashboard** - Visualize session usage and activity trends
-- **Secure** - API key stored locally in browser localStorage
-
-## Screenshots
-
-![Dashboard View](public/assets/dashboard-screenshot.png)
-*Analytics Dashboard showing session statistics*
-
 ![Session View](public/assets/session-screenshot.png)
-*Session view with code diff sidebar, activity feed, and search*
 
-## Prerequisites
+**A powerful, self-hosted workspace for Google's Jules AI agent.** Transform standard agent interactions into an engineering command center with live code diffs, real-time activity monitoring, session analytics, and comprehensive terminal output inspection.
 
-- Node.js 18+ installed
-- Jules API key (get yours from [https://jules.google.com](https://jules.google.com) settings)
-- At least one GitHub repository connected via the Jules GitHub app
+## ✨ Key Features
 
-## Getting Started
+- 🔄 **Real-Time Updates** - Live activity feed with auto-polling
+- 📊 **Code Diff Viewer** - Visualize git patches and changes instantly
+- 💻 **Terminal Inspector** - Detailed bash output analysis (execution coming soon)
+- 📈 **Analytics Dashboard** - Track session metrics and trends
+- 🔍 **Smart Search** - Find sessions by repository or title
+- 📱 **Mobile-First** - Fully responsive design
+- 🔒 **Secure** - API keys stored locally in browser
 
-### Installation
+## 🚀 Quick Start
+
+**Prerequisites:** Node.js 18+, Jules API key from [jules.google.com](https://jules.google.com), and a connected GitHub repository.
 
 ```bash
-# Clone the repository
+# Clone and install
 git clone <your-repo-url>
 cd jules-ui
-
-# Install dependencies
 npm install
 
-# Start the development server
+# Start development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) (or the port shown in terminal) with your browser.
+Open [http://localhost:3000](http://localhost:3000) and enter your Jules API key when prompted. Your key is stored securely in browser localStorage.
 
-### Configuration
+## 📸 More Screenshots
 
-1. When you first open the app, you'll be prompted to enter your Jules API key
-2. Get your API key from the Jules web app settings page
-3. Enter the key and click "Continue"
-4. The key will be securely stored in your browser's localStorage
+![Dashboard View](public/assets/dashboard-screenshot.png)
+*Analytics Dashboard - Track session success rates, duration, and activity volume*
 
-## Project Structure
+## 🛠️ Tech Stack
 
-```
-jules-app/
-├── app/
-│   ├── layout.tsx           # Root layout with providers
-│   ├── page.tsx             # Main page component
-│   └── globals.css          # Global styles
-├── components/
-│   ├── ui/                  # shadcn/ui components
-│   ├── api-key-setup.tsx    # API key input component
-│   ├── app-layout.tsx       # Main app layout with navigation
-│   ├── session-list.tsx     # Session list sidebar with search
-│   ├── activity-feed.tsx    # Activity feed for sessions
-│   ├── code-diff-sidebar.tsx # Sidebar for viewing code changes
-│   ├── diff-viewer.tsx      # Component to render git diffs
-│   ├── bash-output.tsx      # Component to display terminal output
-│   ├── analytics-dashboard.tsx # Usage and stats visualization
-│   └── new-session-dialog.tsx # Create new session dialog
-├── lib/
-│   └── jules/
-│       ├── client.ts        # Jules API client
-│       └── provider.tsx     # React context provider
-└── types/
-    └── jules.ts             # TypeScript type definitions
-```
+Built with [Next.js 16](https://nextjs.org/), [TypeScript](https://www.typescriptlang.org/), [Tailwind CSS](https://tailwindcss.com/), and [shadcn/ui](https://ui.shadcn.com/).
 
-## Jules API Integration
-
-This app integrates with the official Jules API (`https://jules.googleapis.com/v1alpha`) with the following endpoints:
-
-- **GET /sources** - List all connected GitHub repositories
-- **GET /sessions** - List all Jules sessions
-- **POST /sessions** - Create a new session
-- **GET /sessions/:id/activities** - Get activities for a session
-- **POST /sessions/:id:sendMessage** - Send a message to a session
-- **POST /sessions/:id:approvePlan** - Approve a plan requiring authorization
-
-For full API documentation, visit [developers.google.com/jules/api](https://developers.google.com/jules/api)
-
-## Tech Stack
-
-- **[Next.js 16](https://nextjs.org/)** - React framework with App Router
-- **[TypeScript](https://www.typescriptlang.org/)** - Type safety
-- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS
-- **[shadcn/ui](https://ui.shadcn.com/)** - Beautiful component library
-- **[Lucide React](https://lucide.dev/)** - Icon library
-- **[date-fns](https://date-fns.org/)** - Date formatting
-
-## Development
+## 🔧 Development
 
 ```bash
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
-
-# Run linter
-npm run lint
-
-# Run tests
-npm test
+npm run dev      # Start dev server
+npm run build    # Build for production
+npm run lint     # Run linter
+npm test         # Run tests
 ```
 
-## Contributing
+## 📚 API Integration
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Integrates with Jules API (`https://jules.googleapis.com/v1alpha`) for session management, activity streaming, and real-time updates. See [developers.google.com/jules/api](https://developers.google.com/jules/api) for full documentation.
 
-## License
+## 🤝 Contributing
 
-MIT
+Contributions welcome! Feel free to submit a Pull Request.
 
-## Acknowledgments
+## 📄 License
 
-- Jules API by Google
-- shadcn/ui for the beautiful component library
-- Next.js team for the amazing framework
+MIT License - see LICENSE file for details.
+
+---
+
+Built with ❤️ for the Jules community
