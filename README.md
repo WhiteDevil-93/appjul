@@ -122,13 +122,6 @@ npm start
 npm run lint
 ```
 
-## Mobile Features
-
-- **Responsive Design** - Automatically adapts to screen size
-- **Sheet Navigation** - Mobile-friendly slide-out menu
-- **Touch-Optimized** - All interactions work great on touch devices
-- **Fast Performance** - Optimized for mobile networks
-
 ## Troubleshooting
 
 ### "Unable to connect to server" Error
@@ -154,25 +147,6 @@ Make sure you have:
 - Clear your browser's localStorage and re-enter your API key
 - Check the browser console for detailed error messages
 - Verify you're using a supported browser (Chrome, Firefox, Safari, Edge)
-
-## Deployment
-
-### Vercel (Recommended)
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
-
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Deploy - it's automatic!
-
-### Other Platforms
-
-Build the production app:
-
-```bash
-npm run build
-npm start
-```
 
 ## Contributing
 
