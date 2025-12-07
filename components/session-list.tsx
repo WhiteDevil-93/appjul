@@ -16,6 +16,12 @@ import { CardSpotlight } from '@/components/ui/card-spotlight';
 import { formatDistanceToNow, isValid, parseISO } from 'date-fns';
 import { getArchivedSessions } from '@/lib/archive';
 
+function truncateText(text: string, maxLength: number) {
+  if (!text) return '';
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + '...';
+}
+
 interface SessionListProps {
   onSelectSession: (session: Session) => void;
   selectedSessionId?: string;
@@ -168,7 +174,7 @@ export function SessionList({ onSelectSession, selectedSessionId }: SessionListP
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div className="text-[10px] font-bold leading-tight text-white uppercase tracking-wide flex-1 min-w-0 block overflow-hidden text-ellipsis whitespace-nowrap">
-                            {session.title || 'Untitled'}
+                            {truncateText(session.title || 'Untitled', 30)}
                           </div>
                         </TooltipTrigger>
                         <TooltipContent side="bottom" align="start" className="bg-zinc-900 border-white/10 text-white text-[10px] max-w-[200px] break-words z-[60]">
