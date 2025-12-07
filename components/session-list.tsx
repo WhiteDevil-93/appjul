@@ -164,10 +164,10 @@ export function SessionList({ onSelectSession, selectedSessionId }: SessionListP
                 >
                   <div className={`flex-shrink-0 mt-1 w-2 h-2 rounded-full ${getStatusColor(session.status)}`} />
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5 w-full min-w-0 flex-wrap">
+                    <div className="flex items-center gap-2 mb-0.5 w-full min-w-0">
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="text-[11px] font-bold leading-tight text-white uppercase tracking-wide flex-1 min-w-0 block">
+                          <div className="text-[10px] font-bold leading-tight text-white uppercase tracking-wide flex-1 min-w-0 block overflow-hidden text-ellipsis custom-multiline-truncate">
                             {session.title || 'Untitled'}
                           </div>
                         </TooltipTrigger>
