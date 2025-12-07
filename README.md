@@ -1,6 +1,14 @@
-# Jules Task Manager
+# Jules UI
 
-A modern, mobile-friendly web application for managing multiple Jules AI agent tasks and sessions. Built with Next.js, TypeScript, Tailwind CSS, and shadcn/ui - designed to provide a better user experience than the official Jules web interface.
+The modern, developer-first interface for **Google's Jules AI agent**.
+
+Jules UI upgrades your experience with a beautiful dark-mode dashboard, offering powerful features missing from the standard interface:
+- **Live Code Diffs**: Visualize git patches and code changes instantly.
+- **Interactive Terminal**: Inspect bash outputs and command execution in real-time.
+- **Analytics**: Track session success rates, duration, and activity volume.
+- **Enhanced Search**: Quickly find sessions by repository or title.
+
+Built with Next.js 16, TypeScript, and shadcn/ui.
 
 ![Next.js](https://img.shields.io/badge/Next.js-16.0-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
@@ -39,7 +47,7 @@ A modern, mobile-friendly web application for managing multiple Jules AI agent t
 ```bash
 # Clone the repository
 git clone <your-repo-url>
-cd jules-app
+cd jules-ui
 
 # Install dependencies
 npm install

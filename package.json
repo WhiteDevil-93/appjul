@@ -1,5 +1,6 @@
 {
-  "name": "jules-app",
+  "name": "jules-ui",
+  "description": "The modern, developer-first interface for Google's Jules AI agent. Features live code diffs, interactive terminal outputs, analytics, and a streamlined dark mode experience.",
   "version": "0.1.0",
   "private": true,
   "scripts": {
