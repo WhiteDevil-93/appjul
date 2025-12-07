@@ -18,6 +18,14 @@ A modern, mobile-friendly web application for managing multiple Jules AI agent t
 - **Type-Safe** - Full TypeScript support throughout the application
 - **Secure** - API key stored locally in browser localStorage
 
+## Screenshots
+
+![Dashboard View](public/assets/dashboard-screenshot.png)
+*Analytics Dashboard showing session statistics*
+
+![Session View](public/assets/session-screenshot.png)
+*Session view with code diff sidebar, activity feed, and search*
+
 ## Prerequisites
 
 - Node.js 18+ installed
