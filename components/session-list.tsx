@@ -150,7 +150,7 @@ export function SessionList({ onSelectSession, selectedSessionId }: SessionListP
                 <div className={`flex-shrink-0 mt-1 w-2 h-2 rounded-full ${getStatusColor(session.status)}`} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <div className="text-[11px] font-bold truncate leading-tight text-white uppercase tracking-wide">
+                    <div className="text-[11px] font-bold leading-tight text-white uppercase tracking-wide truncate flex-1 min-w-0">
                       {session.title || 'Untitled'}
                     </div>
                     {session.sourceId && (

@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useJules } from '@/lib/jules/provider';
-import type { Session } from '@/types/jules';
+import type { Session, Activity } from '@/types/jules';
 import { SessionList } from './session-list';
 import { ActivityFeed } from './activity-feed';
+import { CodeDiffSidebar } from './code-diff-sidebar';
 import { AnalyticsDashboard } from './analytics-dashboard';
 import { NewSessionDialog } from './new-session-dialog';
 import { Button } from '@/components/ui/button';
@@ -20,6 +21,9 @@ export function AppLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [codeDiffSidebarCollapsed, setCodeDiffSidebarCollapsed] = useState(false);
+  const [showCodeDiffs, setShowCodeDiffs] = useState(false);
+  const [currentActivities, setCurrentActivities] = useState<Activity[]>([]);
 
   const handleSessionSelect = (session: Session) => {
     setSelectedSession(session);
@@ -153,7 +157,13 @@ export function AppLayout() {
           {view === 'analytics' ? (
             <AnalyticsDashboard />
           ) : selectedSession ? (
-            <ActivityFeed session={selectedSession} onArchive={handleSessionArchived} />
+            <ActivityFeed
+              session={selectedSession}
+              onArchive={handleSessionArchived}
+              showCodeDiffs={showCodeDiffs}
+              onToggleCodeDiffs={setShowCodeDiffs}
+              onActivitiesChange={setCurrentActivities}
+            />
           ) : (
             <div className="flex h-full items-center justify-center p-8">
               <div className="text-center space-y-4 max-w-sm">
@@ -170,6 +180,36 @@ export function AppLayout() {
             </div>
           )}
         </main>
+
+        {/* Code Diff Sidebar */}
+        {selectedSession && showCodeDiffs && (
+          <aside className={`hidden md:flex border-l border-white/[0.08] flex-col bg-zinc-950 transition-all duration-200 ${
+            codeDiffSidebarCollapsed ? 'md:w-12' : 'md:w-[600px]'
+          }`}>
+            <div className="px-3 py-2 border-b border-white/[0.08] flex items-center justify-between">
+              {!codeDiffSidebarCollapsed && (
+                <h2 className="text-[10px] font-bold text-white/40 uppercase tracking-widest">CODE CHANGES</h2>
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-6 w-6 hover:bg-white/5 text-white/60 ${codeDiffSidebarCollapsed ? 'mx-auto' : ''}`}
+                onClick={() => setCodeDiffSidebarCollapsed(!codeDiffSidebarCollapsed)}
+              >
+                {codeDiffSidebarCollapsed ? (
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                ) : (
+                  <ChevronRight className="h-3.5 w-3.5" />
+                )}
+              </Button>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              {!codeDiffSidebarCollapsed && (
+                <CodeDiffSidebar activities={currentActivities} />
+              )}
+            </div>
+          </aside>
+        )}
       </div>
     </div>
   );

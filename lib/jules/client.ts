@@ -225,32 +225,23 @@ export class JulesClient {
                   activity.progressUpdated.description ||
                   activity.progressUpdated.message ||
                   JSON.stringify(activity.progressUpdated, null, 2);
-
-        // Extract artifacts from progress if available
-        if (activity.progressUpdated.artifacts?.length > 0) {
-          for (const artifact of activity.progressUpdated.artifacts) {
-            if (artifact.changeSet?.gitPatch?.unidiffPatch) {
-              activity.diff = artifact.changeSet.gitPatch.unidiffPatch;
-            }
-            if (artifact.bashOutput?.output) {
-              activity.bashOutput = artifact.bashOutput.output;
-            }
-          }
-        }
       } else if (activity.sessionCompleted) {
         type = 'result';
         const result = activity.sessionCompleted;
         content = result.summary || result.message || 'Session completed';
+      }
 
-        // Extract artifacts if available
-        if (result.artifacts?.length > 0) {
-          for (const artifact of result.artifacts) {
-            if (artifact.changeSet?.gitPatch?.unidiffPatch) {
-              activity.diff = artifact.changeSet.gitPatch.unidiffPatch;
-            }
-            if (artifact.bashOutput?.output) {
-              activity.bashOutput = artifact.bashOutput.output;
-            }
+      // Extract artifacts from top-level artifacts array (applies to all activity types)
+      if (activity.artifacts?.length > 0) {
+        for (const artifact of activity.artifacts) {
+          // Handle both gitPatch.unidiffPatch and direct unidiffPatch formats
+          if (artifact.changeSet?.gitPatch?.unidiffPatch) {
+            activity.diff = artifact.changeSet.gitPatch.unidiffPatch;
+          } else if (artifact.changeSet?.unidiffPatch) {
+            activity.diff = artifact.changeSet.unidiffPatch;
+          }
+          if (artifact.bashOutput?.output) {
+            activity.bashOutput = artifact.bashOutput.output;
           }
         }
       } else if (activity.agentMessaged) {
@@ -311,32 +302,23 @@ export class JulesClient {
                 response.progressUpdated.description ||
                 response.progressUpdated.message ||
                 JSON.stringify(response.progressUpdated, null, 2);
-
-      // Extract artifacts from progress if available
-      if (response.progressUpdated.artifacts?.length > 0) {
-        for (const artifact of response.progressUpdated.artifacts) {
-          if (artifact.changeSet?.gitPatch?.unidiffPatch) {
-            response.diff = artifact.changeSet.gitPatch.unidiffPatch;
-          }
-          if (artifact.bashOutput?.output) {
-            response.bashOutput = artifact.bashOutput.output;
-          }
-        }
-      }
     } else if (response.sessionCompleted) {
       type = 'result';
       const result = response.sessionCompleted;
       content = result.summary || result.message || 'Session completed';
+    }
 
-      // Extract artifacts if available
-      if (result.artifacts?.length > 0) {
-        for (const artifact of result.artifacts) {
-          if (artifact.changeSet?.gitPatch?.unidiffPatch) {
-            response.diff = artifact.changeSet.gitPatch.unidiffPatch;
-          }
-          if (artifact.bashOutput?.output) {
-            response.bashOutput = artifact.bashOutput.output;
-          }
+    // Extract artifacts from top-level artifacts array (applies to all activity types)
+    if (response.artifacts?.length > 0) {
+      for (const artifact of response.artifacts) {
+        // Handle both gitPatch.unidiffPatch and direct unidiffPatch formats
+        if (artifact.changeSet?.gitPatch?.unidiffPatch) {
+          response.diff = artifact.changeSet.gitPatch.unidiffPatch;
+        } else if (artifact.changeSet?.unidiffPatch) {
+          response.diff = artifact.changeSet.unidiffPatch;
+        }
+        if (artifact.bashOutput?.output) {
+          response.bashOutput = artifact.bashOutput.output;
         }
       }
     } else if (response.agentMessaged) {

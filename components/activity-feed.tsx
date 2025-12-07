@@ -10,19 +10,21 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { formatDistanceToNow, isValid, parseISO } from 'date-fns';
-import { Send, Archive } from 'lucide-react';
+import { Send, Archive, Code, Terminal, ChevronDown, ChevronRight } from 'lucide-react';
 import { archiveSession, isSessionArchived } from '@/lib/archive';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { DiffViewer } from '@/components/ui/diff-viewer';
 import { BashOutput } from '@/components/ui/bash-output';
 
 interface ActivityFeedProps {
   session: Session;
   onArchive?: () => void;
+  showCodeDiffs: boolean;
+  onToggleCodeDiffs: (show: boolean) => void;
+  onActivitiesChange: (activities: Activity[]) => void;
 }
 
-export function ActivityFeed({ session, onArchive }: ActivityFeedProps) {
+export function ActivityFeed({ session, onArchive, showCodeDiffs, onToggleCodeDiffs, onActivitiesChange }: ActivityFeedProps) {
   const { client } = useJules();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -85,7 +87,7 @@ export function ActivityFeed({ session, onArchive }: ActivityFeedProps) {
     } catch {
       // Not JSON, render as markdown
       return (
-        <div className="prose prose-sm dark:prose-invert max-w-none prose-p:text-xs prose-p:leading-relaxed prose-headings:text-xs prose-headings:font-semibold prose-headings:mb-1 prose-headings:mt-2 prose-ul:text-xs prose-ol:text-xs prose-li:text-xs prose-li:my-0.5 prose-code:text-[11px] prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:text-[11px] prose-pre:bg-muted prose-pre:p-2 prose-blockquote:text-xs prose-blockquote:border-l-primary prose-strong:font-semibold">
+        <div className="prose prose-sm dark:prose-invert max-w-none break-words prose-p:text-xs prose-p:leading-relaxed prose-p:break-words prose-headings:text-xs prose-headings:font-semibold prose-headings:mb-1 prose-headings:mt-2 prose-ul:text-xs prose-ol:text-xs prose-li:text-xs prose-li:my-0.5 prose-code:text-[11px] prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:break-all prose-pre:text-[11px] prose-pre:bg-muted prose-pre:p-2 prose-pre:overflow-x-auto prose-blockquote:text-xs prose-blockquote:border-l-primary prose-strong:font-semibold">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {content}
           </ReactMarkdown>
@@ -106,6 +108,11 @@ export function ActivityFeed({ session, onArchive }: ActivityFeedProps) {
       return () => clearInterval(interval);
     }
   }, [session.id, session.status, client]);
+
+  // Notify parent when activities change
+  useEffect(() => {
+    onActivitiesChange(activities);
+  }, [activities, onActivitiesChange]);
 
   const loadActivities = async (isInitialLoad = true) => {
     if (!client) {
@@ -230,6 +237,29 @@ export function ActivityFeed({ session, onArchive }: ActivityFeedProps) {
     onArchive?.();
   };
 
+  const toggleCodeDiffsSidebar = () => {
+    onToggleCodeDiffs(!showCodeDiffs);
+  };
+
+  // Get only the final code changes (last activity with diff contains all changes)
+  const finalDiff = activities.filter(activity => activity.diff).slice(-1);
+  const hasDiffs = finalDiff.length > 0;
+
+  // State for expanded bash outputs (inline)
+  const [expandedBashOutputs, setExpandedBashOutputs] = useState<Set<string>>(new Set());
+
+  const toggleBashOutput = (activityId: string) => {
+    setExpandedBashOutputs(prev => {
+      const next = new Set(prev);
+      if (next.has(activityId)) {
+        next.delete(activityId);
+      } else {
+        next.add(activityId);
+      }
+      return next;
+    });
+  };
+
   const getActivityIcon = (activity: Activity) => {
     if (activity.role === 'user') {
       return <AvatarFallback className="bg-purple-500 text-white text-[9px] font-bold uppercase tracking-wider">U</AvatarFallback>;
@@ -264,6 +294,9 @@ export function ActivityFeed({ session, onArchive }: ActivityFeedProps) {
 
   // Filter activities the same way as we do for display
   const filteredActivities = activities.filter((activity) => {
+    // Always keep activities with bash output or diffs, regardless of content
+    if (activity.bashOutput || activity.diff) return true;
+
     const content = activity.content?.trim();
     if (!content) return false;
     if (content === '{}') return false;
@@ -381,15 +414,28 @@ export function ActivityFeed({ session, onArchive }: ActivityFeedProps) {
               </div>
             )}
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleArchive}
-            title="Archive session"
-            className="shrink-0 h-7 w-7 hover:bg-white/5 text-white/60"
-          >
-            <Archive className="h-3.5 w-3.5" />
-          </Button>
+          <div className="flex items-center gap-1 shrink-0">
+            {hasDiffs && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleCodeDiffsSidebar}
+                title="View final code changes"
+                className={`h-7 w-7 hover:bg-white/5 ${showCodeDiffs ? 'bg-purple-500/20 text-purple-400' : 'text-white/60'}`}
+              >
+                <Code className="h-3.5 w-3.5" />
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleArchive}
+              title="Archive session"
+              className="h-7 w-7 hover:bg-white/5 text-white/60"
+            >
+              <Archive className="h-3.5 w-3.5" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -489,7 +535,26 @@ export function ActivityFeed({ session, onArchive }: ActivityFeedProps) {
                                 <div className="text-[8px] font-mono text-white/30 mb-1 uppercase tracking-wide">
                                   {formatDate(activity.createdAt)}
                                 </div>
-                                <div className="text-[11px] leading-relaxed text-white/90">{formatContent(activity.content)}</div>
+                                <div className="text-[11px] leading-relaxed text-white/90 break-words">{formatContent(activity.content)}</div>
+                                {activity.bashOutput && (
+                                  <div className="mt-2 pt-2 border-t border-white/[0.05]">
+                                    <button
+                                      onClick={() => toggleBashOutput(activity.id)}
+                                      className="flex items-center gap-2 text-[9px] font-mono uppercase tracking-wider text-green-400 hover:text-green-300 transition-colors mb-2"
+                                    >
+                                      {expandedBashOutputs.has(activity.id) ? (
+                                        <ChevronDown className="h-3 w-3" />
+                                      ) : (
+                                        <ChevronRight className="h-3 w-3" />
+                                      )}
+                                      <Terminal className="h-3 w-3" />
+                                      <span>Command Output</span>
+                                    </button>
+                                    {expandedBashOutputs.has(activity.id) && (
+                                      <BashOutput output={activity.bashOutput} />
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             ))}
                           </div>
@@ -521,15 +586,24 @@ export function ActivityFeed({ session, onArchive }: ActivityFeedProps) {
                             {formatDate(activity.createdAt)}
                           </span>
                         </div>
-                        <div className="text-[11px] leading-relaxed text-white/90">{formatContent(activity.content)}</div>
+                        <div className="text-[11px] leading-relaxed text-white/90 break-words">{formatContent(activity.content)}</div>
                         {activity.bashOutput && (
-                          <div className="mt-3">
-                            <BashOutput output={activity.bashOutput} />
-                          </div>
-                        )}
-                        {activity.diff && (
-                          <div className="mt-3">
-                            <DiffViewer diff={activity.diff} />
+                          <div className="mt-3 pt-3 border-t border-white/[0.08]">
+                            <button
+                              onClick={() => toggleBashOutput(activity.id)}
+                              className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-green-400 hover:text-green-300 transition-colors mb-2"
+                            >
+                              {expandedBashOutputs.has(activity.id) ? (
+                                <ChevronDown className="h-3.5 w-3.5" />
+                              ) : (
+                                <ChevronRight className="h-3.5 w-3.5" />
+                              )}
+                              <Terminal className="h-3.5 w-3.5" />
+                              <span>Command Output</span>
+                            </button>
+                            {expandedBashOutputs.has(activity.id) && (
+                              <BashOutput output={activity.bashOutput} />
+                            )}
                           </div>
                         )}
                         {activity.type === 'plan' &&
