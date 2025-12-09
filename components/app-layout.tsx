@@ -8,6 +8,7 @@ import { ActivityFeed } from './activity-feed';
 import { CodeDiffSidebar } from './code-diff-sidebar';
 import { AnalyticsDashboard } from './analytics-dashboard';
 import { NewSessionDialog } from './new-session-dialog';
+import { QuickReviewButton } from './quick-review-button';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -125,6 +126,7 @@ export function AppLayout() {
                 <span className="text-[10px] font-mono uppercase tracking-wider">Analytics</span>
               </Button>
             )}
+            <QuickReviewButton onSessionCreated={handleSessionCreated} />
             <NewSessionDialog onSessionCreated={handleSessionCreated} />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
