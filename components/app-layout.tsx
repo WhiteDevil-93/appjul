@@ -126,7 +126,6 @@ export function AppLayout() {
                 <span className="text-[10px] font-mono uppercase tracking-wider">Analytics</span>
               </Button>
             )}
-            <QuickReviewButton onSessionCreated={handleSessionCreated} />
             <NewSessionDialog onSessionCreated={handleSessionCreated} />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -201,7 +200,8 @@ export function AppLayout() {
                 <p className="text-[11px] text-white/30 leading-relaxed uppercase tracking-wide font-mono">
                   Select session or create new
                 </p>
-                <div className="pt-2">
+                <div className="pt-2 flex gap-2 justify-center">
+                  <QuickReviewButton onSessionCreated={handleSessionCreated} />
                   <NewSessionDialog onSessionCreated={handleSessionCreated} />
                 </div>
               </div>
