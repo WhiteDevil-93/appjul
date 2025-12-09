@@ -199,14 +199,14 @@ function FileDiff({ file }: { file: ParsedDiffFile }) {
                     )}
                   >
                     {/* Line Numbers */}
-                    <div className="flex w-12 shrink-0 select-none border-r border-white/5 bg-white/[0.02] text-right">
-                      <span className="w-6 pr-1 text-white/20">{line.originalLineNumber || ''}</span>
-                      <span className="w-6 pr-1 text-white/20">{line.modifiedLineNumber || ''}</span>
+                    <div className="flex w-24 shrink-0 select-none border-r border-white/5 bg-white/[0.02] text-right text-white/30">
+                      <span className="w-10 pr-2">{line.originalLineNumber || ''}</span>
+                      <span className="w-10 pr-2">{line.modifiedLineNumber || ''}</span>
                     </div>
                     {/* Content */}
                     <div
                       className={cn(
-                        'px-3 flex-1',
+                        'px-4 flex-auto whitespace-pre',
                         line.type === 'add' && 'text-green-400',
                         line.type === 'remove' && 'text-red-400',
                         line.type === 'context' && 'text-white/60',
