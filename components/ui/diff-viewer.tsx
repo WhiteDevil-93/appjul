@@ -1,13 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Copy, ChevronDown, ChevronRight } from 'lucide-react';
+import { Check, Copy, ChevronDown, ChevronRight, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface DiffViewerProps {
   diff: string;
   className?: string;
+  repoUrl?: string;
+  branch?: string;
 }
 
 interface ParsedDiffFile {
@@ -98,7 +100,7 @@ function parseDiff(diff: string): ParsedDiffFile[] {
   return files;
 }
 
-function FileDiff({ file }: { file: ParsedDiffFile }) {
+function FileDiff({ file, repoUrl, branch = 'main' }: { file: ParsedDiffFile; repoUrl?: string; branch?: string }) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle');
 
@@ -140,17 +142,30 @@ function FileDiff({ file }: { file: ParsedDiffFile }) {
     <div className="border border-white/[0.08] bg-zinc-950/50 rounded-lg overflow-hidden">
       {/* File header */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-white/[0.08] bg-black/50">
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-2 flex-1 text-left hover:bg-white/5 rounded px-2 py-1 -mx-2 transition-colors"
-        >
-          {isExpanded ? (
-            <ChevronDown className="h-3.5 w-3.5 text-white/60" />
-          ) : (
-            <ChevronRight className="h-3.5 w-3.5 text-white/60" />
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center gap-2 text-left hover:bg-white/5 rounded px-2 py-1 -ml-2 transition-colors truncate"
+          >
+            {isExpanded ? (
+              <ChevronDown className="h-3.5 w-3.5 text-white/60" />
+            ) : (
+              <ChevronRight className="h-3.5 w-3.5 text-white/60" />
+            )}
+            <span className="text-[11px] font-mono text-white font-bold">{file.filename}</span>
+          </button>
+          {repoUrl && (
+            <a
+              href={`${repoUrl}/blob/${branch}/${file.filename}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/40 hover:text-white transition-colors"
+              title="View on GitHub"
+            >
+              <ExternalLink className="h-3 w-3" />
+            </a>
           )}
-          <span className="text-[11px] font-mono text-white font-bold">{file.filename}</span>
-        </button>
+        </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 text-[9px] font-mono">
             <span className="text-green-400">+{addedCount}</span>
@@ -226,7 +241,7 @@ function FileDiff({ file }: { file: ParsedDiffFile }) {
   );
 }
 
-export function DiffViewer({ diff, className }: DiffViewerProps) {
+export function DiffViewer({ diff, className, repoUrl, branch }: DiffViewerProps) {
   const files = parseDiff(diff);
 
   if (files.length === 0) {
@@ -247,7 +262,7 @@ export function DiffViewer({ diff, className }: DiffViewerProps) {
         </div>
       </div>
       {files.map((file, idx) => (
-        <FileDiff key={idx} file={file} />
+        <FileDiff key={idx} file={file} repoUrl={repoUrl} branch={branch} />
       ))}
     </div>
   );

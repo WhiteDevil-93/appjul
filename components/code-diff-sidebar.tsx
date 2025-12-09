@@ -26,7 +26,12 @@ export function CodeDiffSidebar({ activities }: CodeDiffSidebarProps) {
     <ScrollArea className="h-full">
       <div className="p-4">
         {finalDiff.map((activity) => (
-          <DiffViewer key={activity.id} diff={activity.diff!} />
+          <DiffViewer 
+            key={activity.id} 
+            diff={activity.diff!} 
+            repoUrl="https://github.com/sbhavani/jules-app"
+            branch="main"
+          />
         ))}
       </div>
     </ScrollArea>
