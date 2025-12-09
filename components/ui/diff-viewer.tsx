@@ -206,7 +206,7 @@ function FileDiff({ file }: { file: ParsedDiffFile }) {
                     {/* Content */}
                     <div
                       className={cn(
-                        'px-4 flex-auto whitespace-pre',
+                        'px-4 grow shrink-0 whitespace-pre',
                         line.type === 'add' && 'text-green-400',
                         line.type === 'remove' && 'text-red-400',
                         line.type === 'context' && 'text-white/60',
