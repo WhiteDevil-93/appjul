@@ -18,13 +18,16 @@ interface ParsedDiffFile {
 interface DiffLine {
   type: 'add' | 'remove' | 'context' | 'header';
   content: string;
-  lineNumber?: number;
+  originalLineNumber?: number;
+  modifiedLineNumber?: number;
 }
 
 function parseDiff(diff: string): ParsedDiffFile[] {
   const files: ParsedDiffFile[] = [];
   const lines = diff.split('\n');
   let currentFile: ParsedDiffFile | null = null;
+  let originalLine = 0;
+  let modifiedLine = 0;
 
   for (const line of lines) {
     // File header: diff --git a/file b/file
@@ -37,6 +40,8 @@ function parseDiff(diff: string): ParsedDiffFile[] {
         filename: match ? match[1] : 'unknown',
         lines: []
       };
+      originalLine = 0;
+      modifiedLine = 0;
     } else if (currentFile) {
       // Skip metadata lines
       if (line.startsWith('index ') || line.startsWith('---') || line.startsWith('+++')) {
@@ -44,6 +49,11 @@ function parseDiff(diff: string): ParsedDiffFile[] {
       }
       // Chunk header: @@ -1,5 +1,5 @@
       else if (line.startsWith('@@')) {
+        const match = line.match(/^@@ -(\d+),?\d* \+(\d+),?\d* @@/);
+        if (match) {
+          originalLine = parseInt(match[1], 10) - 1;
+          modifiedLine = parseInt(match[2], 10) - 1;
+        }
         currentFile.lines.push({
           type: 'header',
           content: line
@@ -51,23 +61,31 @@ function parseDiff(diff: string): ParsedDiffFile[] {
       }
       // Added line
       else if (line.startsWith('+')) {
+        modifiedLine++;
         currentFile.lines.push({
           type: 'add',
-          content: line
+          content: line,
+          modifiedLineNumber: modifiedLine
         });
       }
       // Removed line
       else if (line.startsWith('-')) {
+        originalLine++;
         currentFile.lines.push({
           type: 'remove',
-          content: line
+          content: line,
+          originalLineNumber: originalLine
         });
       }
       // Context line
       else if (line.startsWith(' ')) {
+        originalLine++;
+        modifiedLine++;
         currentFile.lines.push({
           type: 'context',
-          content: line
+          content: line,
+          originalLineNumber: originalLine,
+          modifiedLineNumber: modifiedLine
         });
       }
     }
@@ -169,19 +187,34 @@ function FileDiff({ file }: { file: ParsedDiffFile }) {
             className="overflow-hidden"
           >
             <div className="overflow-x-auto">
-              <pre className="text-[10px] font-mono leading-relaxed m-0">
+              <pre className="text-xs font-mono leading-relaxed m-0">
                 {file.lines.map((line, idx) => (
                   <div
                     key={idx}
                     className={cn(
-                      'px-3 py-0.5',
-                      line.type === 'add' && 'bg-green-500/10 text-green-400',
-                      line.type === 'remove' && 'bg-red-500/10 text-red-400',
-                      line.type === 'context' && 'text-white/60',
-                      line.type === 'header' && 'text-purple-400 bg-purple-500/5 font-bold'
+                      'flex',
+                      line.type === 'add' && 'bg-green-500/10',
+                      line.type === 'remove' && 'bg-red-500/10',
+                      line.type === 'header' && 'bg-purple-500/5'
                     )}
                   >
-                    {line.content}
+                    {/* Line Numbers */}
+                    <div className="flex w-12 shrink-0 select-none border-r border-white/5 bg-white/[0.02] text-right">
+                      <span className="w-6 pr-1 text-white/20">{line.originalLineNumber || ''}</span>
+                      <span className="w-6 pr-1 text-white/20">{line.modifiedLineNumber || ''}</span>
+                    </div>
+                    {/* Content */}
+                    <div
+                      className={cn(
+                        'px-3 flex-1',
+                        line.type === 'add' && 'text-green-400',
+                        line.type === 'remove' && 'text-red-400',
+                        line.type === 'context' && 'text-white/60',
+                        line.type === 'header' && 'text-purple-400 font-bold'
+                      )}
+                    >
+                      {line.content}
+                    </div>
                   </div>
                 ))}
               </pre>
