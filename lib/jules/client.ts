@@ -186,6 +186,18 @@ export class JulesClient {
       };
     });
 
+    // Temporary fix: Add missing repo if not present
+    const missingRepo = 'sbhavani/dgx-spark-playbooks';
+    const missingRepoId = `sources/github/${missingRepo}`;
+    if (!sources.some(s => s.id === missingRepoId)) {
+      sources.push({
+        id: missingRepoId,
+        name: missingRepo,
+        type: 'github',
+        metadata: { source: missingRepoId, name: missingRepoId }
+      });
+    }
+
     console.log('[Jules Client] Loaded sources:', sources.length, sources);
     return sources;
   }
