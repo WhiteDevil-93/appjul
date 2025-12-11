@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { formatDistanceToNow, isValid, parseISO } from 'date-fns';
-import { Send, Archive, Code, Terminal, ChevronDown, ChevronRight, Play, GitBranch, GitPullRequest, MoreVertical } from 'lucide-react';
+import { Send, Archive, Code, Terminal, ChevronDown, ChevronRight, Play, GitBranch, GitPullRequest, MoreVertical, CloudUpload } from 'lucide-react';
 import { archiveSession } from '@/lib/archive';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -209,10 +209,8 @@ export function ActivityFeed({ session, onArchive, showCodeDiffs, onToggleCodeDi
     }
   };
 
-  const handleQuickReview = async () => {
+  const sendAgentCommand = async (commandPrompt: string) => {
     if (!client || sending) return;
-
-    const reviewPrompt = 'Please perform a comprehensive code review of the repository. Look for bugs, security issues, and opportunities for refactoring. Provide a detailed summary of your findings.';
 
     try {
       setSending(true);
@@ -221,7 +219,7 @@ export function ActivityFeed({ session, onArchive, showCodeDiffs, onToggleCodeDi
       // Send message
       const userMessage = await client.createActivity({
         sessionId: session.id,
-        content: reviewPrompt,
+        content: commandPrompt,
       });
 
       // Add user message to activities immediately
@@ -236,12 +234,24 @@ export function ActivityFeed({ session, onArchive, showCodeDiffs, onToggleCodeDi
         }
       }, 2000);
     } catch (err) {
-      console.error('Failed to start review:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to start review';
+      console.error('Failed to send command:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to send command';
       setError(errorMessage);
     } finally {
       setSending(false);
     }
+  };
+
+  const handleQuickReview = async () => {
+    await sendAgentCommand('Please perform a comprehensive code review of the repository. Look for bugs, security issues, and opportunities for refactoring. Provide a detailed summary of your findings.');
+  };
+
+  const handlePublishBranch = async () => {
+    await sendAgentCommand('Please push the current branch to the remote repository.');
+  };
+
+  const handleCreatePR = async () => {
+    await sendAgentCommand('Please create a pull request for the current branch.');
   };
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -518,10 +528,20 @@ export function ActivityFeed({ session, onArchive, showCodeDiffs, onToggleCodeDi
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 bg-zinc-950 border-white/10 text-white/80">
                 {session.status === 'active' && (
-                  <DropdownMenuItem onClick={handleQuickReview} disabled={sending} className="focus:bg-white/10 focus:text-white text-xs cursor-pointer">
-                    <Play className="mr-2 h-3.5 w-3.5" />
-                    <span>Start Code Review</span>
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuItem onClick={handleQuickReview} disabled={sending} className="focus:bg-white/10 focus:text-white text-xs cursor-pointer">
+                      <Play className="mr-2 h-3.5 w-3.5" />
+                      <span>Start Code Review</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handlePublishBranch} disabled={sending} className="focus:bg-white/10 focus:text-white text-xs cursor-pointer">
+                      <CloudUpload className="mr-2 h-3.5 w-3.5" />
+                      <span>Publish Branch</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleCreatePR} disabled={sending} className="focus:bg-white/10 focus:text-white text-xs cursor-pointer">
+                      <GitPullRequest className="mr-2 h-3.5 w-3.5" />
+                      <span>Create PR</span>
+                    </DropdownMenuItem>
+                  </>
                 )}
                 {session.status === 'completed' && hasDiffs && (
                   <NewSessionDialog
