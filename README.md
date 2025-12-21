@@ -25,7 +25,7 @@
 
 ```bash
 # Clone and install
-git clone <your-repo-url>
+git clone <[https://github.com/WhiteDevil-93/appjul}>
 cd jules-ui
 npm install
 
